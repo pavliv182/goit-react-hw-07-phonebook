@@ -1,8 +1,7 @@
 import PropTypes from 'prop-types';
-
 import css from './filter.module.css';
 
-function Filter({ addFilter, value }) {
+function Filter({ value, addFilter }) {
   return (
     <div className={css.filterWrapper}>
       <label htmlFor="filter">
@@ -12,7 +11,7 @@ function Filter({ addFilter, value }) {
           type="text"
           name="filter"
           id="filter"
-          onChange={e => addFilter(e)}
+          onChange={addFilter}
         />
       </label>
     </div>

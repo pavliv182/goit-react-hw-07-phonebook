@@ -1,13 +1,14 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { fetchContacts } from 'redux/contacts/contacts-operations';
+import {
+  fetchContacts,
+  addContact,
+  removeContact,
+} from 'redux/contacts/contacts-operations';
 
 const originalState = {
-  contacts: {
-    items: [],
-    isLoading: false,
-    error: null,
-  },
-  filter: '',
+  items: [],
+  isLoading: false,
+  error: null,
 };
 
 const mySlice = createSlice({
@@ -16,26 +17,44 @@ const mySlice = createSlice({
   extraReducers: {
     [fetchContacts.pending]: (store, _) => ({
       ...store,
+      isLoading: true,
+      error: null,
     }),
-    [fetchContacts.fulfilled]: ({ contacts }, { payload }) => {
-      contacts.items = payload;
+    [fetchContacts.fulfilled]: (store, { payload }) => {
+      store.items = payload;
+      store.isLoading = false;
     },
-    [fetchContacts.rejected]: (store, payload) => {
-      console.log('rejected');
+    [fetchContacts.rejected]: (store, { payload }) => {
+      store.isLoading = false;
+      store.error = payload.message;
+    },
+    [addContact.pending]: (store, _) => ({
+      ...store,
+      isLoading: true,
+      error: null,
+    }),
+    [addContact.fulfilled]: (store, { payload }) => {
+      store.items.push(payload);
+      store.isLoading = false;
+    },
+    [addContact.rejected]: (store, { payload }) => {
+      store.isLoading = false;
+      store.error = payload.message;
+    },
+    [removeContact.pending]: (store, _) => ({
+      ...store,
+      isLoading: true,
+      error: null,
+    }),
+    [removeContact.fulfilled]: (store, { payload }) => {
+      store.items = store.items.filter(el => el.id !== payload.id);
+      store.isLoading = false;
+    },
+    [removeContact.rejected]: (store, { payload }) => {
+      store.isLoading = false;
+      store.error = payload.message;
     },
   },
-  // reducers: {
-  //   add(state, action) {
-  //     if (state.find(el => el.name === action.payload.name)) {
-  //       return;
-  //     }
-  //     state.push(action.payload);
-  //   },
-  //   remove(state, action) {
-  //     return state.filter(el => el.id !== action.payload);
-  //   },
-  // },
 });
 
-export const { add, remove } = mySlice.actions;
 export default mySlice.reducer;
