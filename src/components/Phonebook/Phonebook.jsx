@@ -1,13 +1,23 @@
 import { useState } from 'react';
 import { nanoid } from 'nanoid';
-import PropTypes from 'prop-types';
+import { useDispatch, useSelector } from 'react-redux';
+import { Notify } from 'notiflix';
+
+import { addContact } from 'redux/contacts/contacts-operations';
 
 import './phonebook.module.css';
 
-const Phonebook = ({ addContact }) => {
+const Phonebook = () => {
   const [formData, setFormData] = useState({ name: '', number: '' });
 
+  const { items } = useSelector(store => store.contacts);
+
   const { name, number } = formData;
+  const dispatch = useDispatch();
+
+  const addNewContact = data => {
+    dispatch(addContact(data));
+  };
 
   const handleChange = e => {
     setFormData(prevState => {
@@ -22,7 +32,17 @@ const Phonebook = ({ addContact }) => {
       number,
       id: nanoid(),
     };
-    addContact(data);
+
+    if (items.find(contact => contact.name === data.name)) {
+      Notify.failure('This name is already exicited');
+      formReset();
+
+      return;
+    }
+
+    addNewContact(data);
+    Notify.success('Contact succesfully added');
+
     formReset();
   };
 
@@ -69,7 +89,3 @@ const Phonebook = ({ addContact }) => {
 };
 
 export default Phonebook;
-
-Phonebook.propTypes = {
-  addContact: PropTypes.func.isRequired,
-};

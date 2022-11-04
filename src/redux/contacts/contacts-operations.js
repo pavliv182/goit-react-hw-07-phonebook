@@ -22,20 +22,20 @@ export const addContact = createAsyncThunk(
     } catch (error) {
       return rejectWithValue(error);
     }
-  },
-  {
-    condition: (data, { getState }) => {
-      const { contacts } = getState();
-      const duplicateContact = contacts.items.find(
-        contact => contact.name === data.name
-      );
-      if (duplicateContact) {
-        alert('This name is already exicited');
-        return false;
-      }
-      return data;
-    },
   }
+  // {
+  //   condition: (data, { getState }) => {
+  //     const { contacts } = getState();
+  //     const duplicateContact = contacts.items.find(
+  //       contact => contact.name === data.name
+  //     );
+  //     if (duplicateContact) {
+  //       alert('This name is already exicited');
+  //       return false;
+  //     }
+  //     return data;
+  //   },
+  // }
 );
 
 export const removeContact = createAsyncThunk(

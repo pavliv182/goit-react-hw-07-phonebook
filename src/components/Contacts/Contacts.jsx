@@ -1,8 +1,40 @@
-import PropTypes from 'prop-types';
+import { Notify } from 'notiflix';
+import { useDispatch, useSelector } from 'react-redux';
+import { useEffect } from 'react';
+import { fetchContacts } from 'redux/contacts/contacts-operations';
+
+import { removeContact } from 'redux/contacts/contacts-operations';
 
 import css from './contacts.module.css';
 
-const Contacts = ({ data, deleteContact }) => {
+const Contacts = () => {
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    dispatch(fetchContacts());
+  }, [dispatch]);
+
+  const { items } = useSelector(store => store.contacts);
+  const filter = useSelector(store => store.filter);
+
+  const deleteContact = id => {
+    dispatch(removeContact(id));
+    Notify.info('Contact deleted from your phonebook');
+  };
+
+  const filterContacts = () => {
+    if (filter) {
+      const filteredContacts = items.filter(el =>
+        el.name.toLowerCase().includes(filter.toLowerCase())
+      );
+      return filteredContacts;
+    }
+
+    return items;
+  };
+
+  const data = filterContacts();
+
   const elements = data.map(el => (
     <li className={css.item} key={el.id}>
       <span>
@@ -13,25 +45,8 @@ const Contacts = ({ data, deleteContact }) => {
       </button>
     </li>
   ));
-  return <ul>{elements}</ul>;
+
+  return <>{Boolean(data.length) && <ul>{elements}</ul>}</>;
 };
 
 export default Contacts;
-
-Contacts.defaultProps = {
-  data: [],
-};
-
-Contacts.propTypes = {
-  data: PropTypes.arrayOf(
-    PropTypes.shape({
-      id: PropTypes.oneOfType([
-        PropTypes.object.isRequired,
-        PropTypes.string.isRequired,
-      ]),
-      name: PropTypes.string.isRequired,
-      number: PropTypes.string.isRequired,
-    })
-  ),
-  deleteContact: PropTypes.func.isRequired,
-};
